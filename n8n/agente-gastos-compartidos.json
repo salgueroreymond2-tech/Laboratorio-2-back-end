@@ -1,0 +1,298 @@
+{
+  "name": "Agente IA - Control de Gastos Compartidos",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gastos-ia",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization"
+              }
+            ]
+          }
+        }
+      },
+      "id": "1a2b3c4d-0001-4000-8000-000000000001",
+      "name": "Webhook Gastos IA",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        180,
+        300
+      ],
+      "webhookId": "gastos-ia-webhook-id"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalización y validación estricta de la solicitud entrante\nconst body = $json.body || $json;\n\nif (!body || typeof body !== 'object') {\n  return [{\n    json: {\n      isValid: false,\n      errorCode: 'INVALID_BODY',\n      errorMessage: 'El cuerpo de la solicitud debe ser un objeto JSON válido.',\n      action: 'unknown'\n    }\n  }];\n}\n\nconst action = body.action;\n\nif (action === 'clasificar_gasto') {\n  if (!body.descripcion || typeof body.descripcion !== 'string' || body.descripcion.trim().length === 0) {\n    return [{\n      json: {\n        isValid: false,\n        errorCode: 'MISSING_DESCRIPTION',\n        errorMessage: 'El campo \"descripcion\" es obligatorio para clasificar el gasto.',\n        action\n      }\n    }];\n  }\n\n  const promptText = `Acción solicitada: clasificar_gasto\\nDescripción del gasto: \"${body.descripcion.trim()}\"\\n\\nInstrucción: Clasifica este gasto exactamente en una de las siguientes categorías permitidas: Vivienda, Alimentación, Transporte, Servicios, Entretenimiento, Salud, Educación, Viajes, Compras, Otros.\\n\\nDevuelve obligatoriamente un JSON con esta estructura exacta:\\n{\\n  \"ok\": true,\\n  \"data\": {\\n    \"categoria\": \"<CategoriaSeleccionada>\",\\n    \"confianza\": 0.95,\\n    \"justificacion\": \"<Breve explicacion de por que corresponde a esta categoria>\"\\n  },\\n  \"error\": null\\n}`;\n\n  return [{\n    json: {\n      isValid: true,\n      action,\n      prompt: promptText,\n      rawInput: body\n    }\n  }];\n}\n\nif (action === 'resumen_mensual') {\n  const grupoId = body.grupo_id;\n  const mes = body.mes || 'Mes actual';\n  const gastos = Array.isArray(body.gastos) ? body.gastos : [];\n  const balances = Array.isArray(body.balances) ? body.balances : [];\n\n  const promptText = `Acción solicitada: resumen_mensual\\nGrupo ID: ${grupoId}\\nMes evaluado: ${mes}\\nCantidad de gastos en el mes: ${gastos.length}\\nListado de gastos: ${JSON.stringify(gastos)}\\nBalances actuales de los integrantes: ${JSON.stringify(balances)}\\n\\nInstrucción: Analiza los gastos y balances proporcionados. No inventes montos ni agregues información inexistente. Calcula la categoría en la que más se gastó y genera recomendaciones prudentes para liquidar deudas o moderar consumos.\\n\\nDevuelve obligatoriamente un JSON con esta estructura exacta:\\n{\\n  \"ok\": true,\\n  \"data\": {\\n    \"grupo_id\": ${grupoId},\\n    \"mes\": \"${mes}\",\\n    \"total_gastado\": \"<TotalSumadoFormatoDecimal>\",\\n    \"categoria_principal\": \"<CategoriaMasGastada>\",\\n    \"resumen\": \"<Parrafo en lenguaje natural analizando el comportamiento de los gastos>\",\\n    \"recomendaciones\": [\\n      \"<Recomendacion 1>\",\\n      \"<Recomendacion 2>\"\\n    ]\\n  },\\n  \"error\": null\\n}`;\n\n  return [{\n    json: {\n      isValid: true,\n      action,\n      prompt: promptText,\n      rawInput: body\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    isValid: false,\n    errorCode: 'ACTION_UNKNOWN',\n    errorMessage: `Acción desconocida \"${action}\". Acciones permitidas: clasificar_gasto, resumen_mensual.`,\n    action\n  }\n}];"
+      },
+      "id": "1a2b3c4d-0002-4000-8000-000000000002",
+      "name": "Validar y Preparar Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isValid }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "1a2b3c4d-0003-4000-8000-000000000003",
+      "name": "¿Entrada Válida?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.prompt }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Eres un Asistente Experto en Gestión de Gastos Compartidos y Finanzas Colaborativas.\n\nREGLAS OBLIGATORIAS:\n1. Responde EXCLUSIVAMENTE en español.\n2. NO inventes cifras, fechas, personas ni movimientos financieros que no estén explícitamente en los datos recibidos.\n3. Si la acción es 'clasificar_gasto', utiliza ÚNICAMENTE una de estas categorías permitidas: Vivienda, Alimentación, Transporte, Servicios, Entretenimiento, Salud, Educación, Viajes, Compras, Otros.\n4. Si la acción es 'resumen_mensual', sintetiza el total gastado, detecta la categoría preponderante y ofrece 2 a 3 recomendaciones prudentes y claras para liquidar saldos o controlar gastos.\n5. NO proporciones asesoría financiera legal o profesional.\n6. Devuelve ÚNICAMENTE un objeto JSON válido respetando el contrato { ok: true, data: {...}, error: null }.\n7. NO envíes bloques markdown ```json ni texto fuera del objeto JSON."
+        }
+      },
+      "id": "1a2b3c4d-0004-4000-8000-000000000004",
+      "name": "AI Agent Gastos Compartidos",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        920,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "1a2b3c4d-0005-4000-8000-000000000005",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        920,
+        420
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "1a2b3c4d-0006-4000-8000-000000000006",
+      "name": "Calculator Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "name": "sumar_montos_y_categorias",
+        "description": "Calcula la suma exacta de un array de números o agrupa totales por categoría para el resumen mensual.",
+        "jsCode": "// Herramienta de cálculo para el agente\ntry {\n  const input = typeof query === 'string' ? JSON.parse(query) : query;\n  if (Array.isArray(input)) {\n    const sum = input.reduce((acc, curr) => acc + (Number(curr) || 0), 0);\n    return JSON.stringify({ suma: sum.toFixed(2) });\n  }\n  return JSON.stringify({ resultado: input });\n} catch (e) {\n  return JSON.stringify({ error: e.message });\n}"
+      },
+      "id": "1a2b3c4d-0007-4000-8000-000000000007",
+      "name": "Code Tool Finanzas",
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extracción y validación segura de la respuesta generada por el AI Agent\nconst rawOutput = $json.output || $json.text || JSON.stringify($json);\n\nlet cleaned = String(rawOutput).trim();\n// Eliminar posibles bloques de markdown si el LLM los generó\ncleaned = cleaned.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/\\s*```$/i, '').trim();\n\ntry {\n  const parsed = JSON.parse(cleaned);\n  if (parsed && typeof parsed === 'object' && typeof parsed.ok === 'boolean') {\n    return [{\n      json: parsed\n    }];\n  }\n  if (parsed && typeof parsed === 'object') {\n    return [{\n      json: {\n        ok: true,\n        data: parsed,\n        error: null\n      }\n    }];\n  }\n} catch (err) {\n  // Intento de extracción mediante regex si hay texto adicional\n  const match = cleaned.match(/\\{[\\s\\S]*\\}/);\n  if (match) {\n    try {\n      const extracted = JSON.parse(match[0]);\n      return [{\n        json: {\n          ok: true,\n          data: extracted.data || extracted,\n          error: null\n        }\n      }];\n    } catch (e) {}\n  }\n}\n\n// Error controlado si el modelo no devolvió JSON interpretable\nreturn [{\n  json: {\n    ok: false,\n    data: null,\n    error: {\n      code: 'INVALID_AI_RESPONSE',\n      message: 'El agente de IA no devolvió una respuesta JSON conforme al contrato establecido.'\n    }\n  }\n}];"
+      },
+      "id": "1a2b3c4d-0008-4000-8000-000000000008",
+      "name": "Parsear y Validar Respuesta IA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Respuesta de error para entradas inválidas (acción desconocida o campos faltantes)\nreturn [{\n  json: {\n    ok: false,\n    data: null,\n    error: {\n      code: $json.errorCode || 'BAD_REQUEST',\n      message: $json.errorMessage || 'Parámetros de solicitud inválidos para el agente de IA.'\n    }\n  }\n}];"
+      },
+      "id": "1a2b3c4d-0009-4000-8000-000000000009",
+      "name": "Formatear Error de Entrada",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json; charset=utf-8"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "1a2b3c4d-0010-4000-8000-000000000010",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1480,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Gastos IA": {
+      "main": [
+        [
+          {
+            "node": "Validar y Preparar Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar y Preparar Prompt": {
+      "main": [
+        [
+          {
+            "node": "¿Entrada Válida?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Entrada Válida?": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Gastos Compartidos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formatear Error de Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Gastos Compartidos",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Gastos Compartidos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool Finanzas": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Gastos Compartidos",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Gastos Compartidos": {
+      "main": [
+        [
+          {
+            "node": "Parsear y Validar Respuesta IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear y Validar Respuesta IA": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Error de Entrada": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,1188 @@
+{
+  "info": {
+    "_postman_id": "c1f7a8b9-5678-4a12-9cde-gastoscompartidos-col",
+    "name": "Gastos Compartidos con Liquidaciones - API REST",
+    "description": "Colección completa de pruebas automatizadas para la API REST del Laboratorio 2, Día 1, Caso 3: Control de gastos compartidos con liquidaciones. Incluye pruebas para personas, grupos, gastos (IGUALES, PORCENTAJE, EXACTO), balances, algoritmo de liquidaciones sugeridas, métricas agregadas SQL y manejo estricto de errores (400, 404, 409).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Personas",
+      "item": [
+        {
+          "name": "GET Listar Personas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/personas",
+              "host": ["{{base_url}}"],
+              "path": ["personas"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(Array.isArray(data)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Persona por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/personas/{{persona_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["personas", "{{persona_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Persona has id, nombre and email\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('id');",
+                  "    pm.expect(data).to.have.property('nombre');",
+                  "    pm.expect(data).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Crear Persona",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Laura Morales\",\n  \"email\": \"laura.morales@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/personas",
+              "host": ["{{base_url}}"],
+              "path": ["personas"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Persona created successfully\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('id');",
+                  "    pm.expect(data.nombre).to.eql('Laura Morales');",
+                  "    pm.expect(data.email).to.eql('laura.morales@example.com');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Actualizar Persona",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Gómez Actualizado\",\n  \"email\": \"carlos.gomez@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/personas/1",
+              "host": ["{{base_url}}"],
+              "path": ["personas", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Persona updated\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.nombre).to.eql('Carlos Gómez Actualizado');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH Actualización Parcial de Persona",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Gómez\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/personas/1",
+              "host": ["{{base_url}}"],
+              "path": ["personas", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 400 - Crear Persona con Email Inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Inválido\",\n  \"email\": \"no-es-un-correo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/personas",
+              "host": ["{{base_url}}"],
+              "path": ["personas"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 404 - Obtener Persona Inexistente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/personas/99999",
+              "host": ["{{base_url}}"],
+              "path": ["personas", "99999"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 409 - Crear Persona con Email Duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Duplicado\",\n  \"email\": \"carlos.gomez@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/personas",
+              "host": ["{{base_url}}"],
+              "path": ["personas"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Grupos",
+      "item": [
+        {
+          "name": "GET Listar Grupos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grupos",
+              "host": ["{{base_url}}"],
+              "path": ["grupos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array of groups\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(Array.isArray(data)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Grupo por ID con Integrantes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grupos/{{grupo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["grupos", "{{grupo_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Grupo contains integrantes array\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('id');",
+                  "    pm.expect(data).to.have.property('integrantes');",
+                  "    pm.expect(Array.isArray(data.integrantes)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Crear Grupo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Viaje a las Montañas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grupos",
+              "host": ["{{base_url}}"],
+              "path": ["grupos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Agregar Integrante a Grupo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"persona_id\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/grupos/1/personas",
+              "host": ["{{base_url}}"],
+              "path": ["grupos", "1", "personas"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Consulta de Balances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grupos/{{grupo_id}}/balances",
+              "host": ["{{base_url}}"],
+              "path": ["grupos", "{{grupo_id}}", "balances"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Balances structure includes formula and list\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('grupo_id');",
+                  "    pm.expect(data).to.have.property('formula');",
+                  "    pm.expect(data).to.have.property('balances');",
+                  "    pm.expect(Array.isArray(data.balances)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Consulta de Liquidaciones Sugeridas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grupos/{{grupo_id}}/liquidaciones-sugeridas",
+              "host": ["{{base_url}}"],
+              "path": ["grupos", "{{grupo_id}}", "liquidaciones-sugeridas"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Suggested settlements has expected format\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('grupo_id');",
+                  "    pm.expect(data).to.have.property('balances');",
+                  "    pm.expect(data).to.have.property('liquidaciones_sugeridas');",
+                  "    pm.expect(data).to.have.property('cantidad_transferencias');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 409 - Bloqueo de Eliminación de Integrante con Saldo Pendiente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grupos/1/personas/1",
+              "host": ["{{base_url}}"],
+              "path": ["grupos", "1", "personas", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Returns error explaining pending balance\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "    pm.expect(data.error).to.include('balance');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE Eliminar Integrante con Balance 0.00",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/grupos/1/personas/5",
+              "host": ["{{base_url}}"],
+              "path": ["grupos", "1", "personas", "5"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Member removed successfully\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('mensaje');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Gastos",
+      "item": [
+        {
+          "name": "GET Listar Gastos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array of expenses\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(Array.isArray(data)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Consulta de Gasto con Participaciones Anidadas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/gastos/{{gasto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["gastos", "{{gasto_id}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Gasto has participaciones with participant names\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('id');",
+                  "    pm.expect(data).to.have.property('participaciones');",
+                  "    pm.expect(Array.isArray(data.participaciones)).to.be.true;",
+                  "    if (data.participaciones.length > 0) {",
+                  "        pm.expect(data.participaciones[0]).to.have.property('persona_nombre');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Crear Gasto - Reparto IGUALES con Sobrante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"descripcion\": \"Almuerzo Grupal Playa\",\n  \"monto\": 100.01,\n  \"pagado_por\": 1,\n  \"tipo_reparto\": \"IGUALES\",\n  \"categoria\": \"Alimentos\",\n  \"participantes\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Remainder cents distributed deterministically\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.participaciones).to.be.an('array').with.lengthOf(3);",
+                  "    pm.expect(data.participaciones[0].monto_asignado).to.eql('33.34');",
+                  "    pm.expect(data.participaciones[1].monto_asignado).to.eql('33.34');",
+                  "    pm.expect(data.participaciones[2].monto_asignado).to.eql('33.33');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Crear Gasto - Reparto por PORCENTAJE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"descripcion\": \"Alquiler de Sombrillas y Toldos\",\n  \"monto\": 60.00,\n  \"pagado_por\": 2,\n  \"tipo_reparto\": \"PORCENTAJE\",\n  \"categoria\": \"Playa\",\n  \"participantes\": [\n    { \"persona_id\": 1, \"porcentaje\": 50.00 },\n    { \"persona_id\": 2, \"porcentaje\": 25.00 },\n    { \"persona_id\": 3, \"porcentaje\": 25.00 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Amounts match percentages\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.participaciones[0].monto_asignado).to.eql('30.00');",
+                  "    pm.expect(data.participaciones[1].monto_asignado).to.eql('15.00');",
+                  "    pm.expect(data.participaciones[2].monto_asignado).to.eql('15.00');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Crear Gasto - Reparto EXACTO",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"descripcion\": \"Bebidas Variadas\",\n  \"monto\": 45.50,\n  \"pagado_por\": 3,\n  \"tipo_reparto\": \"EXACTO\",\n  \"categoria\": \"Bebidas\",\n  \"participantes\": [\n    { \"persona_id\": 1, \"monto_asignado\": 20.00 },\n    { \"persona_id\": 2, \"monto_asignado\": 15.50 },\n    { \"persona_id\": 3, \"monto_asignado\": 10.00 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT Actualizar Gasto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"descripcion\": \"Hospedaje Cabaña Playa (Actualizado)\",\n  \"monto\": 160.00,\n  \"pagado_por\": 1,\n  \"tipo_reparto\": \"IGUALES\",\n  \"categoria\": \"Hospedaje\",\n  \"participantes\": [1, 2, 3, 4]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos/1",
+              "host": ["{{base_url}}"],
+              "path": ["gastos", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Updated expense has new amount 160.00\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.monto).to.eql('160.00');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH Actualización Parcial de Gasto",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Hospedaje Cabaña Playa VIP\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos/1",
+              "host": ["{{base_url}}"],
+              "path": ["gastos", "1"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 400 - Crear Gasto con Monto Inválido",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"descripcion\": \"Gasto Error\",\n  \"monto\": -15.00,\n  \"pagado_por\": 1,\n  \"tipo_reparto\": \"IGUALES\",\n  \"participantes\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 404 - Crear Gasto con Grupo Inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 99999,\n  \"descripcion\": \"Gasto Fantasma\",\n  \"monto\": 50.00,\n  \"pagado_por\": 1,\n  \"tipo_reparto\": \"IGUALES\",\n  \"participantes\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 409 - Reparto EXACTO con Participaciones que no Cuadran",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"descripcion\": \"Cena Descuadrada\",\n  \"monto\": 100.00,\n  \"pagado_por\": 1,\n  \"tipo_reparto\": \"EXACTO\",\n  \"participantes\": [\n    { \"persona_id\": 1, \"monto_asignado\": 40.00 },\n    { \"persona_id\": 2, \"monto_asignado\": 50.00 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "    pm.expect(data.error).to.include('no coincide');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 409 - Reparto PORCENTAJE que no Suma 100%",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"descripcion\": \"Combustible Descuadrado\",\n  \"monto\": 50.00,\n  \"pagado_por\": 1,\n  \"tipo_reparto\": \"PORCENTAJE\",\n  \"participantes\": [\n    { \"persona_id\": 1, \"porcentaje\": 40.00 },\n    { \"persona_id\": 2, \"porcentaje\": 50.00 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "    pm.expect(data.error).to.include('100%');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 409 - Participante no Pertenece al Grupo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"descripcion\": \"Gasto con Intruso\",\n  \"monto\": 30.00,\n  \"pagado_por\": 1,\n  \"tipo_reparto\": \"IGUALES\",\n  \"participantes\": [1, 5]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/gastos",
+              "host": ["{{base_url}}"],
+              "path": ["gastos"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Liquidaciones",
+      "item": [
+        {
+          "name": "GET Listar Liquidaciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/liquidaciones",
+              "host": ["{{base_url}}"],
+              "path": ["liquidaciones"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(Array.isArray(data)).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Registrar una Liquidación",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"de_persona\": 3,\n  \"a_persona\": 1,\n  \"monto\": 15.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/liquidaciones",
+              "host": ["{{base_url}}"],
+              "path": ["liquidaciones"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Settlement recorded\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('id');",
+                  "    pm.expect(data.monto).to.eql('15.00');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 400 - Liquidación de Persona a Sí Misma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"de_persona\": 1,\n  \"a_persona\": 1,\n  \"monto\": 20.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/liquidaciones",
+              "host": ["{{base_url}}"],
+              "path": ["liquidaciones"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error 409 - Liquidación con Integrante No Perteneciente al Grupo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grupo_id\": 1,\n  \"de_persona\": 5,\n  \"a_persona\": 1,\n  \"monto\": 20.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/liquidaciones",
+              "host": ["{{base_url}}"],
+              "path": ["liquidaciones"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 409 Conflict\", function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});",
+                  "pm.test(\"Error structure { error: ... }\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Resumen y Métricas",
+      "item": [
+        {
+          "name": "GET Consulta de Resumen Global y por Grupo (SQL)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/resumen",
+              "host": ["{{base_url}}"],
+              "path": ["resumen"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Resumen contains global metrics and group details\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('global');",
+                  "    pm.expect(data.global).to.have.property('total_personas');",
+                  "    pm.expect(data.global).to.have.property('total_grupos');",
+                  "    pm.expect(data.global).to.have.property('total_gastos');",
+                  "    pm.expect(data.global).to.have.property('monto_global_gastado');",
+                  "    pm.expect(data).to.have.property('grupos');",
+                  "    pm.expect(Array.isArray(data.grupos)).to.be.true;",
+                  "    if (data.grupos.length > 0) {",
+                  "        pm.expect(data.grupos[0]).to.have.property('cantidad_integrantes');",
+                  "        pm.expect(data.grupos[0]).to.have.property('numero_gastos');",
+                  "        pm.expect(data.grupos[0]).to.have.property('total_gastado');",
+                  "        pm.expect(data.grupos[0]).to.have.property('promedio_gasto');",
+                  "        pm.expect(data.grupos[0]).to.have.property('cantidad_liquidaciones');",
+                  "        pm.expect(data.grupos[0]).to.have.property('monto_liquidaciones');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
