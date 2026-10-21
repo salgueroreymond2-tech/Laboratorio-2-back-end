@@ -2,8 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { apiRouter } from './routes/index.js';
-import { notFound } from './middlewares/notFound.js';
-import { errorHandler } from './middlewares/errorHandler.js';
+import { notFound, errorHandler, requestLogger } from './middlewares/index.js';
 
 dotenv.config();
 
@@ -13,11 +12,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10kb' }));
 
-// Registro de peticiones entrantes para depuración en vivo
-app.use((req, res, next) => {
-  console.log(`[API] ${req.method} ${req.originalUrl}`);
-  next();
-});
+// Middleware de registro de peticiones HTTP
+app.use(requestLogger);
 
 // Ruta raíz informativa sobre el estado de la API
 app.get('/', (req, res) => {
