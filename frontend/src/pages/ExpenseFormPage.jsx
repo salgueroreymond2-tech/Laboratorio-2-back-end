@@ -56,7 +56,9 @@ export function ExpenseFormPage() {
       }
       navigate('/gastos');
     } catch (err) {
+      console.error('Error al procesar el gasto:', err);
       setServerError(err);
+      throw err;
     }
   };
 

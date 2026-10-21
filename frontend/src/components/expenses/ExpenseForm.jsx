@@ -172,7 +172,19 @@ export function ExpenseForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    const isValid = validate();
+    console.log('Form validation result:', isValid, { grupoId, descripcion, monto, pagadoPor, fecha, tipoReparto, participants });
+
+    if (!isValid) {
+      // Desplazar al primer campo inválido
+      setTimeout(() => {
+        const firstInvalid = document.querySelector('.is-invalid, .form-error');
+        if (firstInvalid) {
+          firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 50);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -187,6 +199,8 @@ export function ExpenseForm({
         participantes,
       };
       await onSubmit(payload);
+    } catch (err) {
+      console.error('Error al guardar el gasto:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -448,6 +462,53 @@ export function ExpenseForm({
           />
         )}
       </div>
+
+      {/* Alerta visible encima de los botones en caso de error */}
+      {Object.keys(errors).length > 0 && (
+        <div
+          role="alert"
+          style={{
+            background: 'var(--color-danger-bg)',
+            border: '1px solid var(--color-danger-border)',
+            color: 'var(--color-danger)',
+            padding: '0.875rem 1rem',
+            borderRadius: 'var(--radius-md)',
+            marginBottom: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '0.875rem',
+          }}
+        >
+          <AlertCircle size={18} />
+          <span>
+            {errors.participantes
+              ? errors.participantes
+              : 'Por favor completa todos los campos requeridos marcados en rojo antes de guardar.'}
+          </span>
+        </div>
+      )}
+
+      {serverError && (
+        <div
+          role="alert"
+          style={{
+            background: 'var(--color-danger-bg)',
+            border: '1px solid var(--color-danger-border)',
+            color: 'var(--color-danger)',
+            padding: '0.875rem 1rem',
+            borderRadius: 'var(--radius-md)',
+            marginBottom: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '0.875rem',
+          }}
+        >
+          <AlertCircle size={18} />
+          <span>{serverError.message || 'Error del servidor al guardar el gasto.'}</span>
+        </div>
+      )}
 
       {/* Botones de acción */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1.5rem' }}>
