@@ -1,10 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Receipt, Users, User, Menu, X, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Receipt, Users, User, Menu, X, Sparkles, Sun, Moon } from 'lucide-react';
 
 export function MainLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+
+  // Estado del tema: 'light' (Beige/Blanco hueso) o 'dark' (Obsidian/Esmeralda)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -21,13 +35,14 @@ export function MainLayout() {
       <header
         style={{
           height: 'var(--header-height)',
-          background: 'rgba(249, 247, 242, 0.92)',
+          background: 'var(--color-bg-header)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           borderBottom: '1px solid var(--color-border)',
           position: 'sticky',
           top: 0,
           zIndex: 40,
+          transition: 'background var(--transition-fast), border-color var(--transition-fast)',
         }}
       >
         <div
@@ -50,12 +65,12 @@ export function MainLayout() {
                 width: '2.5rem',
                 height: '2.5rem',
                 borderRadius: 'var(--radius-md)',
-                background: 'linear-gradient(135deg, #15803d 0%, #166534 100%)',
+                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 2px 10px rgba(21, 128, 61, 0.25)',
+                boxShadow: 'var(--shadow-glow)',
               }}
             >
               <Sparkles size={20} />
@@ -106,9 +121,9 @@ export function MainLayout() {
                         borderRadius: 'var(--radius-md)',
                         fontSize: '0.875rem',
                         fontWeight: 600,
-                        color: isActive ? '#15803d' : 'var(--color-text-secondary)',
-                        background: isActive ? '#eaf5ee' : 'transparent',
-                        border: `1px solid ${isActive ? '#c4e7ce' : 'transparent'}`,
+                        color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                        background: isActive ? 'var(--color-primary-light)' : 'transparent',
+                        border: `1px solid ${isActive ? 'var(--color-border-focus)' : 'transparent'}`,
                         transition: 'all var(--transition-fast)',
                       }}
                     >
@@ -121,25 +136,63 @@ export function MainLayout() {
             </ul>
           </nav>
 
-          {/* Botón de Menú Móvil */}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="mobile-menu-btn"
-            style={{
-              background: 'transparent',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              padding: '0.5rem',
-              color: 'var(--color-text-primary)',
-              cursor: 'pointer',
-              display: 'flex',
-            }}
-            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú de navegación'}
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          {/* Acciones de la derecha: Botón de Tema y Menú Móvil */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* Botón de Modo Claro (Beige) / Oscuro */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.4375rem 0.875rem',
+                borderRadius: 'var(--radius-full)',
+                background: 'var(--color-bg-elevated)',
+                border: '1px solid var(--color-border)',
+                color: 'var(--color-text-primary)',
+                cursor: 'pointer',
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                transition: 'all var(--transition-fast)',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+              title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro (beige)'}
+              aria-label="Alternar modo de color"
+            >
+              {theme === 'light' ? (
+                <>
+                  <Moon size={16} color="var(--color-secondary)" />
+                  <span className="theme-toggle-text">Modo Oscuro</span>
+                </>
+              ) : (
+                <>
+                  <Sun size={16} color="#fbbf24" />
+                  <span className="theme-toggle-text">Modo Beige</span>
+                </>
+              )}
+            </button>
+
+            {/* Botón de Menú Móvil */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="mobile-menu-btn"
+              style={{
+                background: 'transparent',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '0.5rem',
+                color: 'var(--color-text-primary)',
+                cursor: 'pointer',
+                display: 'flex',
+              }}
+              aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú de navegación'}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -210,11 +263,12 @@ export function MainLayout() {
           textAlign: 'center',
           fontSize: '0.8125rem',
           color: 'var(--color-text-muted)',
+          transition: 'background var(--transition-fast), border-color var(--transition-fast)',
         }}
       >
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <span>Control de Gastos Compartidos con Liquidaciones - Laboratorio 2</span>
-          <span>Integración con Node.js, Express, PostgreSQL y Agente n8n</span>
+          <span>DiviGastos · Control de Gastos Compartidos con Liquidaciones</span>
+          <span>Desarrollado con React, Express, PostgreSQL y Agente IA n8n</span>
         </div>
       </footer>
 
@@ -226,6 +280,11 @@ export function MainLayout() {
           }
           .mobile-menu-btn {
             display: none !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .theme-toggle-text {
+            display: none;
           }
         }
       `}</style>

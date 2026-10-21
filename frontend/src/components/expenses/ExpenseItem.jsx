@@ -23,7 +23,7 @@ export function ExpenseItem({ expense, onDelete }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        background: '#ffffff',
+        background: 'var(--color-bg-card)',
         border: '1px solid var(--color-border)',
         borderRadius: 'var(--radius-lg)',
         boxShadow: 'var(--shadow-sm)',

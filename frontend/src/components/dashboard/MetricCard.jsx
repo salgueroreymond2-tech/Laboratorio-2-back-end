@@ -18,7 +18,7 @@ export function MetricCard({
         position: 'relative',
         overflow: 'hidden',
         border: '1px solid var(--color-border)',
-        background: '#ffffff',
+        background: 'var(--color-bg-card)',
         borderRadius: 'var(--radius-lg)',
         boxShadow: 'var(--shadow-sm)',
       }}
