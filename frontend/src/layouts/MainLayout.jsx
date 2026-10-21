@@ -21,8 +21,9 @@ export function MainLayout() {
       <header
         style={{
           height: 'var(--header-height)',
-          background: 'rgba(17, 24, 39, 0.85)',
-          backdropFilter: 'blur(12px)',
+          background: 'rgba(13, 17, 26, 0.82)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
           borderBottom: '1px solid var(--color-border)',
           position: 'sticky',
           top: 0,
@@ -49,12 +50,12 @@ export function MainLayout() {
                 width: '2.5rem',
                 height: '2.5rem',
                 borderRadius: 'var(--radius-md)',
-                background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: 'var(--shadow-glow)',
+                boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)',
               }}
             >
               <Sparkles size={20} />
@@ -105,9 +106,9 @@ export function MainLayout() {
                         borderRadius: 'var(--radius-md)',
                         fontSize: '0.875rem',
                         fontWeight: 600,
-                        color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-                        background: isActive ? 'var(--color-primary-light)' : 'transparent',
-                        border: `1px solid ${isActive ? 'var(--color-border-focus)' : 'transparent'}`,
+                        color: isActive ? '#34d399' : 'var(--color-text-secondary)',
+                        background: isActive ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
+                        border: `1px solid ${isActive ? 'rgba(52, 211, 153, 0.35)' : 'transparent'}`,
                         transition: 'all var(--transition-fast)',
                       }}
                     >

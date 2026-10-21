@@ -17,6 +17,10 @@ export function MetricCard({
         justifyContent: 'space-between',
         position: 'relative',
         overflow: 'hidden',
+        border: '1px solid var(--color-border)',
+        background: 'linear-gradient(145deg, rgba(24, 32, 50, 0.75) 0%, rgba(19, 25, 40, 0.85) 100%)',
+        backdropFilter: 'blur(14px)',
+        borderRadius: 'var(--radius-lg)',
       }}
     >
       <div
@@ -24,9 +28,21 @@ export function MetricCard({
           position: 'absolute',
           top: 0,
           left: 0,
-          width: '4px',
+          width: '3.5px',
           height: '100%',
           backgroundColor: color,
+        }}
+      />
+
+      <div
+        style={{
+          position: 'absolute',
+          top: '-25px',
+          right: '-25px',
+          width: '90px',
+          height: '90px',
+          background: `radial-gradient(circle, ${color}25 0%, transparent 70%)`,
+          pointerEvents: 'none',
         }}
       />
 
@@ -39,8 +55,9 @@ export function MetricCard({
             style={{
               padding: '0.5rem',
               borderRadius: 'var(--radius-md)',
-              background: 'var(--color-bg-elevated)',
+              background: `${color}18`,
               color: color,
+              border: `1px solid ${color}30`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

@@ -23,7 +23,21 @@ export function ExpenseItem({ expense, onDelete }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        transition: 'transform 0.15s ease, border-color 0.15s ease',
+        background: 'linear-gradient(145deg, rgba(24, 32, 50, 0.72) 0%, rgba(19, 25, 40, 0.82) 100%)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius-lg)',
+        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.borderColor = 'var(--color-border-hover)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.borderColor = 'var(--color-border)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
       }}
     >
       <div>
