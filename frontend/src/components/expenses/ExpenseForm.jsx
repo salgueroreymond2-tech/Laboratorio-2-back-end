@@ -216,7 +216,11 @@ export function ExpenseForm({
 
     if (!isValid) {
       const errorList = Object.values(newErrors);
-      alert('⚠️ Faltan campos por completar:\n\n• ' + errorList.join('\n• '));
+      try {
+        alert('⚠️ Faltan campos por completar:\n\n• ' + errorList.join('\n• '));
+      } catch {
+        // Fallback si el navegador bloquea alerts
+      }
 
       setTimeout(() => {
         const firstInvalid = document.querySelector('.is-invalid, .form-error');
@@ -229,16 +233,35 @@ export function ExpenseForm({
 
     setIsSubmitting(true);
     try {
+      const cleanMonto = Number(String(monto).trim().replace(',', '.'));
+      
+      let cleanParticipantes = [];
+      if (tipoReparto === 'IGUALES') {
+        cleanParticipantes = participants.map((p) => (typeof p === 'object' ? Number(p.persona_id) : Number(p)));
+      } else if (tipoReparto === 'PORCENTAJE') {
+        cleanParticipantes = participants.map((p) => ({
+          persona_id: Number(p.persona_id),
+          porcentaje: Number(String(p.porcentaje || 0).trim().replace(',', '.')),
+        }));
+      } else if (tipoReparto === 'EXACTO') {
+        cleanParticipantes = participants.map((p) => ({
+          persona_id: Number(p.persona_id),
+          monto_asignado: Number(String(p.monto_asignado || 0).trim().replace(',', '.')),
+        }));
+      }
+
       const payload = {
         grupo_id: Number(grupoId),
         descripcion: descripcion.trim(),
-        monto: Number(monto),
+        monto: cleanMonto,
         pagado_por: Number(pagadoPor),
         fecha,
         categoria: categoria || 'General',
         tipo_reparto: tipoReparto,
-        participantes,
+        participantes: cleanParticipantes,
       };
+
+      console.log('Enviando payload al backend:', payload);
       await onSubmit(payload);
     } catch (err) {
       console.error('Error al guardar el gasto:', err);
@@ -509,24 +532,25 @@ export function ExpenseForm({
         <div
           role="alert"
           style={{
-            background: 'var(--color-danger-bg)',
-            border: '1px solid var(--color-danger-border)',
-            color: 'var(--color-danger)',
-            padding: '0.875rem 1rem',
+            background: 'rgba(239, 68, 68, 0.12)',
+            border: '2px solid var(--color-danger)',
+            color: '#fca5a5',
+            padding: '1rem 1.25rem',
             borderRadius: 'var(--radius-md)',
-            marginBottom: '1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '0.875rem',
+            marginBottom: '1.25rem',
           }}
         >
-          <AlertCircle size={18} />
-          <span>
-            {errors.participantes
-              ? errors.participantes
-              : 'Por favor completa todos los campos requeridos marcados en rojo antes de guardar.'}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '1rem', color: '#f87171', marginBottom: '0.5rem' }}>
+            <AlertCircle size={20} />
+            <span>Campos pendientes antes de guardar el gasto:</span>
+          </div>
+          <ul style={{ margin: 0, paddingLeft: '1.5rem', fontSize: '0.875rem', lineHeight: '1.6' }}>
+            {Object.entries(errors).map(([key, msg]) => (
+              <li key={key} style={{ color: '#fca5a5' }}>
+                {msg}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
