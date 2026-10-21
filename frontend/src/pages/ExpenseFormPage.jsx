@@ -58,6 +58,7 @@ export function ExpenseFormPage() {
     } catch (err) {
       console.error('Error al procesar el gasto:', err);
       setServerError(err);
+      alert('❌ Error del servidor: ' + (err.message || 'No se pudo guardar el gasto.'));
       throw err;
     }
   };

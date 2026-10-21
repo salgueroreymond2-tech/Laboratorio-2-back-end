@@ -204,16 +204,20 @@ export function ExpenseForm({
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return { isValid: Object.keys(newErrors).length === 0, newErrors };
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const isValid = validate();
-    console.log('Form validation result:', isValid, { grupoId, descripcion, monto, pagadoPor, fecha, tipoReparto, participants });
+    if (e && e.preventDefault) e.preventDefault();
+    console.log('handleSubmit llamado');
+
+    const { isValid, newErrors } = validate();
+    console.log('Form validation result:', isValid, newErrors);
 
     if (!isValid) {
-      // Desplazar al primer campo inválido
+      const errorList = Object.values(newErrors);
+      alert('⚠️ Faltan campos por completar:\n\n• ' + errorList.join('\n• '));
+
       setTimeout(() => {
         const firstInvalid = document.querySelector('.is-invalid, .form-error');
         if (firstInvalid) {
@@ -558,7 +562,8 @@ export function ExpenseForm({
           <ArrowLeft size={16} /> Cancelar
         </button>
         <button
-          type="submit"
+          type="button"
+          onClick={handleSubmit}
           disabled={isSubmitting}
           className="btn btn-primary"
         >
