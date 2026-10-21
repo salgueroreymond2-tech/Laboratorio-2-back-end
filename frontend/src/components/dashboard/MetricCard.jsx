@@ -18,9 +18,9 @@ export function MetricCard({
         position: 'relative',
         overflow: 'hidden',
         border: '1px solid var(--color-border)',
-        background: 'linear-gradient(145deg, rgba(24, 32, 50, 0.75) 0%, rgba(19, 25, 40, 0.85) 100%)',
-        backdropFilter: 'blur(14px)',
+        background: '#ffffff',
         borderRadius: 'var(--radius-lg)',
+        boxShadow: 'var(--shadow-sm)',
       }}
     >
       <div

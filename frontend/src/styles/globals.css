@@ -13,14 +13,14 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Fondo inmersivo con mesh ambiental calmado (agradable a los ojos) */
+/* Fondo cálido blanco hueso / beige con textura sutil */
 body {
   font-family: var(--font-body);
   background-color: var(--color-bg-app);
   background-image:
-    radial-gradient(at 10% 12%, rgba(16, 185, 129, 0.08) 0px, transparent 45%),
-    radial-gradient(at 90% 8%, rgba(99, 102, 241, 0.07) 0px, transparent 40%),
-    radial-gradient(at 50% 85%, rgba(14, 165, 233, 0.05) 0px, transparent 50%);
+    radial-gradient(at 15% 15%, rgba(238, 232, 220, 0.65) 0px, transparent 50%),
+    radial-gradient(at 85% 10%, rgba(232, 224, 208, 0.5) 0px, transparent 45%),
+    radial-gradient(at 50% 90%, rgba(240, 235, 224, 0.6) 0px, transparent 50%);
   background-attachment: fixed;
   color: var(--color-text-primary);
   line-height: 1.6;
@@ -28,7 +28,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Personalización de scrollbar suave */
+/* Scrollbar suave en tonos hueso y arena */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -37,11 +37,11 @@ body {
   background: var(--color-bg-app);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.14);
+  background: #d8d0c2;
   border-radius: var(--radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.24);
+  background: #c6bca9;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -64,7 +64,7 @@ a {
 }
 
 a:hover {
-  color: #34d399;
+  color: var(--color-primary-hover);
 }
 
 button, input, select, textarea {
@@ -73,13 +73,12 @@ button, input, select, textarea {
   color: inherit;
 }
 
-/* Enfoque accesible visible sin agresividad */
+/* Enfoque accesible visible y estético */
 :focus-visible {
   outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
 }
 
-/* Utilidad para lectores de pantalla */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -92,11 +91,9 @@ button, input, select, textarea {
   border-width: 0;
 }
 
-/* Tarjetas con Glassmorphism suave y elegante */
+/* Tarjetas limpias en blanco cálido sobre fondo beige */
 .card {
-  background: rgba(24, 32, 50, 0.72);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
@@ -109,7 +106,7 @@ button, input, select, textarea {
   box-shadow: var(--shadow-md);
 }
 
-/* Botones universales con diseño sutil y ergonómico */
+/* Botones con ergonomía visual y paleta armónica */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -132,40 +129,40 @@ button, input, select, textarea {
   pointer-events: none;
 }
 
-/* Primario: Verde Esmeralda relajante */
+/* Primario: Verde bosque / esmeralda cálido */
 .btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.28);
+  box-shadow: 0 2px 8px rgba(21, 128, 61, 0.25);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.38);
+  background: linear-gradient(135deg, #166534 0%, #14532d 100%);
+  box-shadow: 0 4px 14px rgba(21, 128, 61, 0.35);
   transform: translateY(-1px);
 }
 
-/* Secundario: Slate elevado */
+/* Secundario: Arena / lino cálido */
 .btn-secondary {
-  background: var(--color-bg-elevated);
+  background: #f4efe6;
   color: var(--color-text-primary);
   border-color: var(--color-border);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--color-bg-card-hover);
+  background: #ece4d7;
   border-color: var(--color-border-hover);
   transform: translateY(-1px);
 }
 
-/* Peligro suave */
+/* Peligro: Terracota suave */
 .btn-danger {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: #ffffff;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #dc2626;
+  background: #b91c1c;
   transform: translateY(-1px);
 }
 
@@ -179,17 +176,17 @@ button, input, select, textarea {
   background: var(--color-danger-bg);
 }
 
-/* Botón IA: Violeta e Índigo suave (muy descansado para los ojos) */
+/* Botón IA: Amatista / Lavanda cálido */
 .btn-ai {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
   color: #ffffff;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  box-shadow: 0 2px 12px rgba(99, 102, 241, 0.25);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.22);
 }
 
 .btn-ai:hover:not(:disabled) {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35);
+  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.32);
   transform: translateY(-1px);
 }
 
@@ -209,7 +206,7 @@ button, input, select, textarea {
 
 .form-label {
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text-secondary);
 }
 
@@ -219,26 +216,25 @@ button, input, select, textarea {
 }
 
 .form-input, .form-select, .form-textarea {
-  background: var(--color-bg-input);
-  border: 1px solid var(--color-border);
+  background: #ffffff;
+  border: 1px solid #dcd4c5;
   border-radius: var(--radius-md);
   padding: 0.625rem 0.875rem;
   color: var(--color-text-primary);
   font-size: 0.9375rem;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
   width: 100%;
 }
 
 .form-input:focus, .form-select:focus, .form-textarea:focus {
   border-color: var(--color-border-focus);
-  background-color: #121929;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.15);
   outline: none;
 }
 
 .form-input.is-invalid, .form-select.is-invalid {
   border-color: var(--color-danger);
-  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
 }
 
 .form-error {
@@ -254,7 +250,7 @@ button, input, select, textarea {
   color: var(--color-text-muted);
 }
 
-/* Badges / Etiquetas de estado con tonos pastel descansados */
+/* Badges con tonos cálidos y legibilidad excelente */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -268,33 +264,33 @@ button, input, select, textarea {
 }
 
 .badge-success {
-  background: var(--color-success-bg);
-  color: #34d399;
-  border: 1px solid var(--color-success-border);
+  background: #ecfdf5;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
 }
 
 .badge-danger {
-  background: var(--color-danger-bg);
-  color: #f87171;
-  border: 1px solid var(--color-danger-border);
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
 }
 
 .badge-warning {
-  background: var(--color-warning-bg);
-  color: #fbbf24;
-  border: 1px solid var(--color-warning-border);
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
 }
 
 .badge-info {
-  background: var(--color-info-bg);
-  color: #60a5fa;
-  border: 1px solid rgba(96, 165, 250, 0.3);
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
 }
 
 .badge-neutral {
-  background: var(--color-bg-elevated);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
+  background: #f4efe6;
+  color: #57534e;
+  border: 1px solid #e6e0d4;
 }
 
 /* Animaciones suaves */

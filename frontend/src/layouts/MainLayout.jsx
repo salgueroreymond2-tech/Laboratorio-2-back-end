@@ -21,7 +21,7 @@ export function MainLayout() {
       <header
         style={{
           height: 'var(--header-height)',
-          background: 'rgba(13, 17, 26, 0.82)',
+          background: 'rgba(249, 247, 242, 0.92)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           borderBottom: '1px solid var(--color-border)',
@@ -50,12 +50,12 @@ export function MainLayout() {
                 width: '2.5rem',
                 height: '2.5rem',
                 borderRadius: 'var(--radius-md)',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #15803d 0%, #166534 100%)',
                 color: '#ffffff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)',
+                boxShadow: '0 2px 10px rgba(21, 128, 61, 0.25)',
               }}
             >
               <Sparkles size={20} />
@@ -106,9 +106,9 @@ export function MainLayout() {
                         borderRadius: 'var(--radius-md)',
                         fontSize: '0.875rem',
                         fontWeight: 600,
-                        color: isActive ? '#34d399' : 'var(--color-text-secondary)',
-                        background: isActive ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
-                        border: `1px solid ${isActive ? 'rgba(52, 211, 153, 0.35)' : 'transparent'}`,
+                        color: isActive ? '#15803d' : 'var(--color-text-secondary)',
+                        background: isActive ? '#eaf5ee' : 'transparent',
+                        border: `1px solid ${isActive ? '#c4e7ce' : 'transparent'}`,
                         transition: 'all var(--transition-fast)',
                       }}
                     >

@@ -384,8 +384,8 @@ export function ExpenseForm({
                 marginTop: '0.75rem',
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius-md)',
-                background: 'rgba(139, 92, 246, 0.12)',
-                border: '1px solid rgba(139, 92, 246, 0.35)',
+                background: '#f5f3ff',
+                border: '1px solid #ddd6fe',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -394,14 +394,14 @@ export function ExpenseForm({
               }}
             >
               <div>
-                <span style={{ fontSize: '0.8125rem', color: '#c4b5fd', fontWeight: 600 }}>
+                <span style={{ fontSize: '0.8125rem', color: '#6d28d9', fontWeight: 600 }}>
                   ✨ Categoría aplicada por IA:
                 </span>{' '}
-                <strong style={{ color: '#ffffff', fontSize: '0.9375rem' }}>{aiSuggestion.categoria}</strong>{' '}
-                <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                <strong style={{ color: '#4c1d95', fontSize: '0.9375rem' }}>{aiSuggestion.categoria}</strong>{' '}
+                <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
                   ({Math.round(aiSuggestion.confianza * 100)}% certeza)
                 </span>
-                <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
+                <p style={{ fontSize: '0.8125rem', color: '#5b21b6', marginTop: '0.25rem' }}>
                   {aiSuggestion.justificacion}
                 </p>
               </div>
@@ -414,9 +414,9 @@ export function ExpenseForm({
                 marginTop: '0.75rem',
                 padding: '0.75rem 1rem',
                 borderRadius: 'var(--radius-md)',
-                background: 'rgba(239, 68, 68, 0.15)',
-                border: '1px solid var(--color-danger)',
-                color: '#fca5a5',
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                color: '#b91c1c',
                 fontSize: '0.875rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -540,21 +540,21 @@ export function ExpenseForm({
         <div
           role="alert"
           style={{
-            background: 'rgba(239, 68, 68, 0.12)',
-            border: '2px solid var(--color-danger)',
-            color: '#fca5a5',
+            background: '#fef2f2',
+            border: '2px solid #ef4444',
+            color: '#991b1b',
             padding: '1rem 1.25rem',
             borderRadius: 'var(--radius-md)',
             marginBottom: '1.25rem',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '1rem', color: '#f87171', marginBottom: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold', fontSize: '1rem', color: '#b91c1c', marginBottom: '0.5rem' }}>
             <AlertCircle size={20} />
             <span>Campos pendientes antes de guardar el gasto:</span>
           </div>
           <ul style={{ margin: 0, paddingLeft: '1.5rem', fontSize: '0.875rem', lineHeight: '1.6' }}>
             {Object.entries(errors).map(([key, msg]) => (
-              <li key={key} style={{ color: '#fca5a5' }}>
+              <li key={key} style={{ color: '#b91c1c' }}>
                 {msg}
               </li>
             ))}

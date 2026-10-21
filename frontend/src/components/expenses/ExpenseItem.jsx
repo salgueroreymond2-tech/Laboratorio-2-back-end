@@ -23,10 +23,10 @@ export function ExpenseItem({ expense, onDelete }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        background: 'linear-gradient(145deg, rgba(24, 32, 50, 0.72) 0%, rgba(19, 25, 40, 0.82) 100%)',
-        backdropFilter: 'blur(12px)',
+        background: '#ffffff',
         border: '1px solid var(--color-border)',
         borderRadius: 'var(--radius-lg)',
+        boxShadow: 'var(--shadow-sm)',
         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
       onMouseEnter={(e) => {
