@@ -58,6 +58,7 @@ export function ExpenseForm({
     async function loadMembers() {
       if (!grupoId) {
         setGroupMembers([]);
+        setParticipants([]);
         return;
       }
       setLoadingMembers(true);
@@ -67,12 +68,24 @@ export function ExpenseForm({
           const members = data.integrantes || [];
           setGroupMembers(members);
 
-          // Si es un nuevo gasto o no hay participantes seleccionados, inicializar con todos los del grupo
+          // Inicializar participantes si es un gasto nuevo o no hay integrantes asignados
           if (!initialData || String(initialData.grupo_id) !== String(grupoId)) {
             if (tipoReparto === 'IGUALES') {
               setParticipants(members.map((m) => m.id));
+            } else if (tipoReparto === 'PORCENTAJE') {
+              const count = members.length;
+              if (count > 0) {
+                const base = Math.floor(10000 / count);
+                const rem = 10000 % count;
+                setParticipants(
+                  members.map((m, idx) => ({
+                    persona_id: m.id,
+                    porcentaje: ((base + (idx < rem ? 1 : 0)) / 100).toFixed(2),
+                  }))
+                );
+              }
             } else {
-              setParticipants(members.map((m) => ({ persona_id: m.id, porcentaje: '', monto_asignado: '' })));
+              setParticipants(members.map((m) => ({ persona_id: m.id, monto_asignado: '' })));
             }
           }
         }
@@ -86,7 +99,7 @@ export function ExpenseForm({
     return () => {
       isCancelled = true;
     };
-  }, [grupoId, initialData, tipoReparto]);
+  }, [grupoId]);
 
   // Si cambia el tipo de reparto, adaptar estructura de participantes
   const handleRepartoChange = (newTipo) => {
@@ -96,10 +109,34 @@ export function ExpenseForm({
       setParticipants(ids);
     } else if (newTipo === 'PORCENTAJE') {
       const count = groupMembers.length;
-      const basePct = count > 0 ? (100 / count).toFixed(2) : '';
-      setParticipants(groupMembers.map((m) => ({ persona_id: m.id, porcentaje: basePct })));
+      if (count > 0) {
+        const base = Math.floor(10000 / count);
+        const rem = 10000 % count;
+        setParticipants(
+          groupMembers.map((m, idx) => ({
+            persona_id: m.id,
+            porcentaje: ((base + (idx < rem ? 1 : 0)) / 100).toFixed(2),
+          }))
+        );
+      } else {
+        setParticipants([]);
+      }
     } else if (newTipo === 'EXACTO') {
-      setParticipants(groupMembers.map((m) => ({ persona_id: m.id, monto_asignado: '' })));
+      const totalNum = Number(monto) || 0;
+      const count = groupMembers.length;
+      if (count > 0 && totalNum > 0) {
+        const totalC = Math.round(totalNum * 100);
+        const baseC = Math.floor(totalC / count);
+        const remC = totalC % count;
+        setParticipants(
+          groupMembers.map((m, idx) => ({
+            persona_id: m.id,
+            monto_asignado: ((baseC + (idx < remC ? 1 : 0)) / 100).toFixed(2),
+          }))
+        );
+      } else {
+        setParticipants(groupMembers.map((m) => ({ persona_id: m.id, monto_asignado: '' })));
+      }
     }
   };
 
@@ -135,19 +172,19 @@ export function ExpenseForm({
     const newErrors = {};
 
     const reqGrupo = validateRequired(grupoId, 'grupo');
-    if (reqGrupo) newErrors.grupo_id = reqGrupo;
+    if (reqGrupo) newErrors.grupo_id = 'Debes seleccionar un grupo.';
 
     const reqDesc = validateRequired(descripcion, 'descripción');
-    if (reqDesc) newErrors.descripcion = reqDesc;
+    if (reqDesc) newErrors.descripcion = 'La descripción del gasto es obligatoria.';
 
     const reqMonto = validatePositiveAmount(monto, 'monto');
-    if (reqMonto) newErrors.monto = reqMonto;
+    if (reqMonto) newErrors.monto = reqMonto || 'El monto debe ser un número mayor a cero.';
 
     const reqPagador = validateRequired(pagadoPor, 'pagador');
-    if (reqPagador) newErrors.pagado_por = reqPagador;
+    if (reqPagador) newErrors.pagado_por = 'Debes seleccionar quién pagó el gasto.';
 
     const reqFecha = validateRequired(fecha, 'fecha');
-    if (reqFecha) newErrors.fecha = reqFecha;
+    if (reqFecha) newErrors.fecha = 'La fecha es obligatoria.';
 
     // Validar participaciones según tipo de reparto
     if (tipoReparto === 'IGUALES') {
@@ -522,7 +559,7 @@ export function ExpenseForm({
         </button>
         <button
           type="submit"
-          disabled={isSubmitting || !grupoId}
+          disabled={isSubmitting}
           className="btn btn-primary"
         >
           <Save size={16} />

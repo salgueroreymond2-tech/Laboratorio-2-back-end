@@ -17,7 +17,7 @@ export function toCents(amount) {
     return 0;
   }
 
-  const str = (typeof amount === 'number' ? amount.toFixed(2) : String(amount)).trim();
+  const str = (typeof amount === 'number' ? amount.toFixed(2) : String(amount)).trim().replace(',', '.');
   if (!/^-?\d+(\.\d{1,2})?$/.test(str)) {
     throw new Error(`Monto inválido para conversión monetaria: "${amount}". Máximo 2 decimales.`);
   }
@@ -78,7 +78,7 @@ export function percentageToBasisPoints(percentage) {
   if (percentage === null || percentage === undefined || percentage === '') {
     return 0;
   }
-  const str = (typeof percentage === 'number' ? percentage.toFixed(2) : String(percentage)).trim();
+  const str = (typeof percentage === 'number' ? percentage.toFixed(2) : String(percentage)).trim().replace(',', '.');
   if (!/^\d+(\.\d{1,2})?$/.test(str)) {
     throw new Error(`Porcentaje inválido: "${percentage}".`);
   }
