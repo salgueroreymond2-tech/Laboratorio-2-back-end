@@ -26,38 +26,50 @@ El proyecto sigue una arquitectura por capas estricta para garantizar modularida
 backend/
 ├── .env.example                               # Plantilla de variables de entorno
 ├── .gitignore                                  # Ignora node_modules, .env y logs
-├── package.json                                # Configuración de dependencias y scripts ("type": "module")
-├── schema.sql                                  # DDL de PostgreSQL, restricciones, índices y datos semilla
-├── README.md                                   # Documentación técnica completa del sistema
-├── BITACORA_IA.md                              # Bitácora detallada de ingeniería con IA
+├── package.json                                # Scripts ("start", "dev", "migrate", "test")
+├── schema.sql                                  # DDL de PostgreSQL consolidado
+├── migrations/                                 # Migraciones SQL versionadas
+│   ├── 001_create_schema.sql                  # Creación de tablas, llaves foráneas y restricciones
+│   └── 002_seed_initial_data.sql              # Inserción de datos semilla iniciales
+├── scripts/
+│   └── migrate.js                              # Ejecutor automático de migraciones (npm run migrate)
 ├── postman/
 │   ├── GastosCompartidos.postman_collection.json   # Colección con pruebas y tests automatizados
 │   └── GastosCompartidos.postman_environment.json  # Entorno con variables configuradas
 └── src/
     ├── app.js                                  # Configuración de Express, CORS, JSON parser y rutas
     ├── db.js                                   # Conexión y Pool de PostgreSQL
-    ├── routes/                                 # Definición de rutas y endpoints
+    ├── routes/                                 # Endpoints REST (/api/...)
     │   ├── index.js                            # Agrupador central de rutas (/api)
     │   ├── personas.routes.js                  # Rutas para personas
     │   ├── grupos.routes.js                    # Rutas para grupos, balances y liquidaciones sugeridas
     │   ├── gastos.routes.js                    # Rutas para gastos compartidos
     │   ├── liquidaciones.routes.js             # Rutas para liquidaciones reales
     │   └── resumen.routes.js                   # Rutas para métricas globales
-    ├── controllers/                            # Capa de presentación HTTP (request / response)
+    ├── controllers/                            # Controladores HTTP (request / response)
     │   ├── personas.controller.js
     │   ├── grupos.controller.js
     │   ├── gastos.controller.js
     │   ├── liquidaciones.controller.js
     │   └── resumen.controller.js
-    ├── services/                               # Capa de lógica de negocio, SQL y transacciones
+    ├── services/                               # Reglas de negocio y algoritmos contables
     │   ├── personas.service.js
     │   ├── grupos.service.js
     │   ├── gastos.service.js
     │   ├── liquidaciones.service.js
     │   └── resumen.service.js
+    ├── models/                                 # Modelos de datos (Capa de persistencia SQL)
+    │   ├── persona.model.js                    # Consultas y operaciones para personas
+    │   ├── grupo.model.js                      # Consultas y operaciones para grupos
+    │   ├── gasto.model.js                      # Consultas y operaciones para gastos
+    │   ├── liquidacion.model.js                # Consultas y operaciones para liquidaciones
+    │   └── resumen.model.js                    # Consultas de agregación SQL (KPIs)
     ├── middlewares/                            # Middlewares Express
     │   ├── errorHandler.js                     # Manejador centralizado de errores (AppError, PG, 500)
-    │   └── notFound.js                         # Captura de rutas inexistentes (404)
+    │   ├── notFound.js                         # Captura de rutas inexistentes (404)
+    │   ├── logger.js                           # Registro detallado de peticiones HTTP con latencia
+    │   └── validate.js                         # Validación declarativa de campos requeridos
+    └── utils/                                  # Validaciones de tipos y manejo exacto de centavos
     ├── errors/
     │   └── AppError.js                         # Clase para errores operacionales (400, 404, 409, 500)
     └── utils/
