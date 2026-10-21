@@ -153,6 +153,9 @@ export function ExpenseForm({
     try {
       const result = await classifyExpense(descripcion);
       setAiSuggestion(result);
+      if (result && result.categoria) {
+        setCategoria(result.categoria);
+      }
     } catch (err) {
       setAiError(err.message || 'No se pudo conectar con el servicio de IA en n8n.');
     } finally {
@@ -163,7 +166,6 @@ export function ExpenseForm({
   const applyAiCategory = () => {
     if (aiSuggestion?.categoria) {
       setCategoria(aiSuggestion.categoria);
-      setAiSuggestion(null);
     }
   };
 
@@ -393,30 +395,36 @@ export function ExpenseForm({
             >
               <div>
                 <span style={{ fontSize: '0.8125rem', color: '#c4b5fd', fontWeight: 600 }}>
-                  Sugerencia IA:
+                  ✨ Categoría aplicada por IA:
                 </span>{' '}
-                <strong style={{ color: '#ffffff' }}>{aiSuggestion.categoria}</strong>{' '}
+                <strong style={{ color: '#ffffff', fontSize: '0.9375rem' }}>{aiSuggestion.categoria}</strong>{' '}
                 <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
                   ({Math.round(aiSuggestion.confianza * 100)}% certeza)
                 </span>
-                <p style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.125rem' }}>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
                   {aiSuggestion.justificacion}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={applyAiCategory}
-                className="btn btn-sm btn-primary"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
-              >
-                <Check size={14} /> Aplicar categoría
-              </button>
             </div>
           )}
 
           {aiError && (
-            <div style={{ color: 'var(--color-warning)', fontSize: '0.8125rem', marginTop: '0.5rem' }}>
-              ⚠️ {aiError}
+            <div
+              style={{
+                marginTop: '0.75rem',
+                padding: '0.75rem 1rem',
+                borderRadius: 'var(--radius-md)',
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid var(--color-danger)',
+                color: '#fca5a5',
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <AlertCircle size={18} />
+              <span>{aiError}</span>
             </div>
           )}
         </div>
